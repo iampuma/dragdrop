@@ -1,5 +1,5 @@
 # drupal-user-dashboard
-Drupal dashboard powered by dragula.
+Drupal dashboard powered by [dragula](https://github.com/bevacqua/dragula).
 
 **This repository is under development.**
 
