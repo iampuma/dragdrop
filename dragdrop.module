@@ -1,0 +1,81 @@
+<?php
+/**
+ * @file
+ * Contains all hooks for the drag and drop module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function dragdrop_menu() {
+  $items['admin/config/user-interface/dragdrop'] = array(
+    'title' => 'Drag Drop',
+    'description' => t('Modify drag drop settings.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dragdrop_settings_form'),
+    'access arguments' => array('administer dragdrop'),
+    'file' => 'dragdrop.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function dragdrop_permission() {
+  $permissions['administer dragdrop'] = array(
+    'title' => t('Administer dragdrop'),
+    'description' => t('Perform administration tasks for dragdrop.'),
+  );
+  $permissions['use dragdrop'] = array(
+    'title' => t('Use dragdrop'),
+    'description' => t('Use dragdrop functionality.'),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function dragdrop_page_build(&$page) {
+  if (user_access('use dragdrop')) {
+    $containers = explode(PHP_EOL, variable_get('dragdrop_containers'));
+    $page['content']['#attached']['library'][] = array('dragdrop', 'dragula');
+    $page['content']['#attached']['js'][] = array(
+      'type' => 'setting',
+      'data' => array('dragdrop' => array('containers' => $containers))
+    );
+    $page['content']['#attached']['js'][] = array(
+      'type' => 'file',
+      'data' => drupal_get_path('module', 'dragdrop') . '/js/script.js',
+    );
+    $page['content']['#attached']['css'] = array(
+      'type' => 'file',
+      'data' => drupal_get_path('module', 'dragdrop') . '/css/custom.css',
+    );
+  }
+}
+
+/**
+ * Implements hook_library().
+ */
+function dragdrop_library() {
+  $libraries['dragula'] = array(
+    'title' => 'Dragula',
+    'website' => 'https://github.com/bevacqua/dragula',
+    'version' => '3.6.6',
+    'js' => array(
+      drupal_get_path('module', 'dragdrop') . '/js/dragula.min.js' => array(),
+    ),
+    'css' => array(
+      drupal_get_path('module', 'dragdrop') . '/css/dragula.min.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
