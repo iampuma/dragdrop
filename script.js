@@ -1,32 +1,37 @@
 /**
  * @file
- * Contains javascript functionality for the dashboard module.
+ * Contains javascript functionality for the dragdrop module.
  */
 (function ($, Drupal, window, document, undefined) {
-  Drupal.behaviors.dashboard = {
+  Drupal.behaviors.dragdrop = {
     attach: function (context, settings) {
       var blocks = {removed: []};
-      if (localStorage.getItem('dashboard-blocks')) {
-        blocks = JSON.parse(localStorage.getItem('dashboard-blocks'));
+      if (localStorage.getItem('dragdrop-blocks')) {
+        blocks = JSON.parse(localStorage.getItem('dragdrop-blocks'));
       }
 
-      // Initialize dashboard.
-      dragula([document.querySelector('.region-content-after'), document.querySelector('.region-content-after-side')], {
+      // Initialize dragdrop.
+      dragula([document.querySelector('.region-sidebar-first'), document.querySelector('.region-content')], {
           // TODO: We could extend with the ability to remove blocks, but than
           // we also have to make the functionality to add the blocks again.
-          //removeOnSpill: true,
+          removeOnSpill: true,
+          invalid: function (el, handle) {
+            return !$(handle).hasClass('drag-handle');
+          },
         })
         .on('drop', function (el, container) {
           blocks = {};
           // Keep an array of the order of each block in its region.
-          $('.region-content-after > div, .region-content-after-side > div').each(function(i) {
+          $('.region-sidebar-first > *, .region-content > *').each(function(i) {
             var region = $(this).parent().attr('class');
             if (blocks[region] == undefined) {
               blocks[region] = [];
             }
-            blocks[region].push($(this).attr('id'));
+            if (!$(this).hasClass('dropped')) {
+              blocks[region].push($(this).attr('id'));
+            }
           });
-          localStorage.setItem('dashboard-blocks', JSON.stringify(blocks));
+          localStorage.setItem('dragdrop-blocks', JSON.stringify(blocks));
         })
         .on('remove', function (el, container) {
           // Keep the dropped blocks in the array as well.
@@ -34,8 +39,12 @@
             blocks['removed'] = {};
           }
           blocks['removed'][$(el).attr('id')] = $(el).attr('id');
-          localStorage.setItem('dashboard-blocks', JSON.stringify(blocks));
+          localStorage.setItem('dragdrop-blocks', JSON.stringify(blocks));
         });
+
+      $('.region-sidebar-first > *, .region-content > *').each(function(i) {
+        $(this).prepend("<span class='drag-handle'></span>");
+      });
 
       // Rearrange all blocks.
       if (blocks !== undefined) {
@@ -54,6 +63,9 @@
         });
       }
 
+      $('.drag-gear').click(function() {
+        $('.dropped').show();
+      });
     }
   };
 })(jQuery, Drupal, this, this.document);
