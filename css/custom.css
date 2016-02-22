@@ -23,7 +23,7 @@
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .drag-handle:before {
-  content: "⠿";
+  content: "\283F";
   position: absolute;
   cursor: move;
   top: 0;
