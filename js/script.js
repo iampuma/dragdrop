@@ -1,25 +1,25 @@
 /**
  * @file
- * Contains javascript functionality for the dragdrop module.
+ * Contains javascript functionality for the draggable blocks module.
  */
 (function ($, Drupal, window, document, undefined) {
-  Drupal.behaviors.dragdrop = {
+  Drupal.behaviors.draggable_blocks = {
     attach: function (context, settings) {
       var blocks = {};
       var containers = [];
       var selectors = '';
-      if (localStorage.getItem('dragdrop-blocks')) {
-        blocks = JSON.parse(localStorage.getItem('dragdrop-blocks'));
+      if (localStorage.getItem('draggable-blocks')) {
+        blocks = JSON.parse(localStorage.getItem('draggable-blocks'));
       }
-      $.each(Drupal.settings.dragdrop.containers, function(i, container) {
+      $.each(Drupal.settings.draggable_blocks.containers, function(i, container) {
         containers[i] = document.querySelector(container);
         selectors += container + ' > *,';
       });
 
-      // Initialize dragdrop.
+      // Initialize draggable-blocks.
       dragula(containers, {
           invalid: function (el, handle) {
-            return !$(handle).hasClass('drag-handle');
+            return !$(handle).hasClass('gu-handle');
           },
         })
         .on('drop', function (el, container) {
@@ -34,11 +34,11 @@
               blocks[region].push($(this).attr('id'));
             }
           });
-          localStorage.setItem('dragdrop-blocks', JSON.stringify(blocks));
+          localStorage.setItem('draggable-blocks', JSON.stringify(blocks));
         });
 
       $(selectors).each(function(i) {
-        $(this).prepend("<span class='drag-handle'></span>");
+        $(this).prepend("<span class='gu-handle'></span>");
       });
 
       // Rearrange all blocks.

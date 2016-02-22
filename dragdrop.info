@@ -1,4 +1,0 @@
-name = Drag Drop
-description = Drag and drop module
-core = 7.x
-configure = admin/config/user-interface/dragdrop

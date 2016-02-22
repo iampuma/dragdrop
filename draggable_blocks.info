@@ -1,0 +1,4 @@
+name = Draggable blocks
+description = Draggable blocks module
+core = 7.x
+configure = admin/config/user-interface/draggable-blocks

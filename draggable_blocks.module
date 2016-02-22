@@ -1,0 +1,79 @@
+<?php
+/**
+ * @file
+ * Contains all hooks for the draggable blocks module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function draggable_blocks_menu() {
+  $items['admin/config/user-interface/draggable-blocks'] = array(
+    'title' => 'Draggable blocks',
+    'description' => t('Modify draggable block settings.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('draggable_blocks_settings_form'),
+    'access arguments' => array('administer draggable blocks'),
+    'file' => 'draggable_blocks.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function draggable_blocks_permission() {
+  $permissions['administer draggable blocks'] = array(
+    'title' => t('Administer draggable blocks'),
+    'description' => t('Perform administration tasks for draggable blocks.'),
+  );
+  $permissions['use draggable blocks'] = array(
+    'title' => t('Use draggable blocks'),
+    'description' => t('Use draggable blocks functionality.'),
+  );
+
+  return $permissions;
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function draggable_blocks_page_build(&$page) {
+  if (user_access('use draggable blocks')) {
+    $containers = explode(PHP_EOL, variable_get('draggable_blocks_containers'));
+    drupal_add_library('draggable_blocks', 'dragula');
+    drupal_add_js(array('draggable_blocks' => array('containers' => $containers)), 'setting');
+    drupal_add_js(drupal_get_path('module', 'draggable_blocks') . '/js/script.js');
+    drupal_add_css(drupal_get_path('module', 'draggable_blocks') . '/css/dragula.min.css', array(
+      'group' => CSS_DEFAULT,
+      'type' => 'file')
+    );
+    drupal_add_css(drupal_get_path('module', 'draggable_blocks') . '/css/dragula-custom.css', array(
+      'group' => CSS_DEFAULT,
+      'type' => 'file')
+    );
+  }
+}
+
+/**
+ * Implements hook_library().
+ */
+function draggable_blocks_library() {
+  $libraries['dragula'] = array(
+    'title' => 'Dragula',
+    'website' => 'https://github.com/bevacqua/dragula',
+    'version' => '3.6.6',
+    'js' => array(
+      drupal_get_path('module', 'draggable_blocks') . '/js/dragula.min.js' => array(),
+    ),
+    'css' => array(
+      drupal_get_path('module', 'draggable_blocks') . '/css/dragula.min.css' => array(
+        'type' => 'file',
+        'media' => 'screen',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
