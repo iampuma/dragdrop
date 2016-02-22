@@ -5,7 +5,7 @@
 (function ($, Drupal, window, document, undefined) {
   Drupal.behaviors.dragdrop = {
     attach: function (context, settings) {
-      var blocks = {removed: []};
+      var blocks = {};
       var containers = [];
       var selectors = '';
       if (localStorage.getItem('dragdrop-blocks')) {
@@ -18,7 +18,6 @@
 
       // Initialize dragdrop.
       dragula(containers, {
-          //removeOnSpill: true,
           invalid: function (el, handle) {
             return !$(handle).hasClass('drag-handle');
           },
@@ -36,14 +35,6 @@
             }
           });
           localStorage.setItem('dragdrop-blocks', JSON.stringify(blocks));
-        })
-        .on('remove', function (el, container) {
-          // Keep the dropped blocks in the array as well.
-          if (blocks['removed'] == undefined) {
-            blocks['removed'] = {};
-          }
-          blocks['removed'][$(el).attr('id')] = $(el).attr('id');
-          localStorage.setItem('dragdrop-blocks', JSON.stringify(blocks));
         });
 
       $(selectors).each(function(i) {
@@ -53,23 +44,12 @@
       // Rearrange all blocks.
       if (blocks !== undefined) {
         $.each(blocks, function(region, column) {
-          if (region != 'removed') {
-            // Put every block in the correct place in its region.
-            $.each(column, function(j, value) {
-              $('.'+region.split(' ').join('.')).append($('#'+value));
-            });
-          } else {
-            // Hide every dropped block and add a class.
-            $.each(column, function(j, value) {
-              $('#'+value).hide().addClass('dropped');
-            });
-          }
+          // Put every block in the correct place in its region.
+          $.each(column, function(j, value) {
+            $('.'+region.split(' ').join('.')).append($('#'+value));
+          });
         });
       }
-
-      $('.drag-gear').click(function() {
-        $('.dropped').show();
-      });
     }
   };
 })(jQuery, Drupal, this, this.document);
